@@ -1,0 +1,22 @@
+# .github/workflows/push-to-stage.yml
+name: Push to Staging
+
+on:
+  push:
+    branches:
+      - development
+
+jobs:
+  push-to-staging:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Push to Staging
+        env:
+          STAGE_TOKEN: ${{ secrets.STAGE_TOKEN }}
+        run: |
+          git remote add stage https://x-access-token:${STAGE_TOKEN}@github.com/stage-org/stage-repo.git
+          git push stage development:staging --force
