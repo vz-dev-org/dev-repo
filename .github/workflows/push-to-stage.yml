@@ -18,5 +18,5 @@ jobs:
         env:
           STAGE_TOKEN: ${{ secrets.STAGE_TOKEN }}
         run: |
-          git remote add stage https://x-access-token:${STAGE_TOKEN}@github.com/vz-stage-org/stage-repo.git
+          git remote add stage https://x-access-token:${{ secrets.STAGE_PAT }}@github.com/vz-stage-org/stage-repo.git
           git push stage development:staging --force
