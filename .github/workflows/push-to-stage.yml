@@ -1,52 +1,25 @@
-# .github/workflows/push-to-stage.yml
-name: Push to Staging
-
+name: CI/CD Workflow to Staging
 on:
   push:
     branches:
       - development
 
 jobs:
-  push-to-staging:
+  push-to-stage:
     runs-on: ubuntu-latest
-
     steps:
-      # Step 1: Check out the current code
-      - name: Checkout Code
-        uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-      # Step 2: Debugging - Verify Token is Passed Correctly
-      - name: Debugging Token
-        env:
-          STAGE_TOKEN: ${{ secrets.STAGE_TOKEN }}
+      - name: Set up Git
         run: |
-          echo "Testing if STAGE_TOKEN is passed correctly."
-          # This will print `***` in logs if the token is passed correctly.
-          echo "STAGE_TOKEN=${STAGE_TOKEN}"
-
-      # Step 3: Debugging - Test Remote Repository Access
-      - name: Test Access to Remote Repo
+          git config --global user.name 'github-actions'
+          git config --global user.email 'github-actions@github.com'
+      
+      - name: Push to Staging Development Branch
         env:
-          STAGE_TOKEN: ${{ secrets.STAGE_TOKEN }}
+          STAGE_PAT: ${{ secrets.STAGE_PAT }}
         run: |
-          echo "Testing access to the remote repository..."
-          git ls-remote https://x-access-token:${STAGE_TOKEN}@github.com/vz-stage-org/stage-repo.git
-
-      # Step 4: Push Changes to Staging Repository
-      - name: Push to Staging Branch
-        env:
-          STAGE_TOKEN: ${{ secrets.STAGE_TOKEN }}
-        run: |
-          echo "Adding remote repository..."
-          git remote add stage https://x-access-token:${STAGE_TOKEN}@github.com/vz-stage-org/stage-repo.git
-
-          echo "Pushing changes from development to staging..."
-          git push stage development:staging --force
-
-      # Optional: Debugging - Dry Run Push (Remove after debugging)
-      - name: Test Push Command (Dry Run)
-        env:
-          STAGE_TOKEN: ${{ secrets.STAGE_TOKEN }}
-        run: |
-          echo "Performing a dry-run push to validate credentials..."
-          git push stage development:staging --dry-run
+          git remote add staging https://x-access-token:${{ secrets.STAGE_PAT }}@github.com/vz-stage-org/stage-repo.git
+          git fetch staging
+          git push staging main:development
