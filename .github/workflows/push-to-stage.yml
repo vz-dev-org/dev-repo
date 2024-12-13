@@ -1,22 +1,31 @@
-# .github/workflows/push-to-stage.yml
-name: Push to Staging
-
+name: CI/CD Workflow to Staging
 on:
   push:
     branches:
-      - development
+      - main
 
 jobs:
-  push-to-staging:
+  push-to-stage:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-      - name: Push to Staging
-        env:
-          STAGE_TOKEN: ${{ secrets.STAGE_TOKEN }}
+      - name: Ensure Main Branch Exists
         run: |
-          git remote add stage https://x-access-token:${STAGE_TOKEN}@github.com/stage-org/stage-repo.git
-          git push stage development:staging --force
+          git fetch origin
+          git checkout -b main || git checkout main
+          git pull origin main
+
+      - name: Set up Git
+        run: |
+          git config --global user.name 'github-actions'
+          git config --global user.email 'github-actions@github.com'
+      
+      - name: Push to Staging Development Branch
+        env:
+          STAGE_PAT: ${{ secrets.STAGE_PAT }}
+        run: |
+          git remote add staging https://x-access-token:${{ secrets.STAGE_PAT }}@github.com/vz-stage-org/stage-repo.git
+          git fetch staging
+          git push staging main:development
