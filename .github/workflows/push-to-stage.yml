@@ -20,6 +20,6 @@ jobs:
         env:
           STAGE_PAT: ${{ secrets.STAGE_PAT }}
         run: |
-          git remote add staging https://x-access-token:${{ secrets.STAGE_PAT }}@github.com/vz-stage-org/stage-repo.git
-          git fetch staging
-          git push staging main:development
+          git remote add stage-repo https://x-access-token:${{ secrets.STAGE_PAT }}@github.com/vz-stage-org/stage-repo.git
+          git fetch stage-repo
+          git push stage-repo main:development
