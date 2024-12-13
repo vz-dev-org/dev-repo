@@ -11,12 +11,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Ensure Main Branch Exists
-        run: |
-          git fetch origin
-          git checkout -b main || git checkout main
-          git pull origin main
-
       - name: Set up Git
         run: |
           git config --global user.name 'github-actions'
@@ -25,7 +19,10 @@ jobs:
       - name: Push to Staging Development Branch
         env:
           STAGE_PAT: ${{ secrets.STAGE_PAT }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          echo "STAGE_PAT: ${{ secrets.STAGE_PAT }}"
+          echo "GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}"
           git remote add staging https://x-access-token:${{ secrets.STAGE_PAT }}@github.com/vz-stage-org/stage-repo.git
           git fetch staging
           git push staging main:development
